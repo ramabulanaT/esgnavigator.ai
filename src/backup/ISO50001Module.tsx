@@ -151,4 +151,4 @@ const ISO50001Assessment = () => {
   );
 };
 
-export default ISO50001Assessment;001Assessment;
+export default ISO50001Assessment;
