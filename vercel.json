@@ -1,18 +1,18 @@
 ﻿{
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": null,
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@latest"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/((?!api/.*).*)",
-      "destination": "/index.html"
-    }
-  ]
+    "framework":  null,
+    "functions":  {
+                      "api/**/*.ts":  {
+                                          "runtime":  "@vercel/node@latest"
+                                      }
+                  },
+    "buildCommand":  "npm run build",
+    "installCommand":  "npm install",
+    "outputDirectory":  "dist",
+    "rewrites":  [
+                     {
+                         "destination":  "/index.html",
+                         "source":  "/((?!api/.*).*)"
+                     }
+                 ],
+    "devCommand":  "npm run dev"
 }
