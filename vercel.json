@@ -1,0 +1,8 @@
+# Verify it exists and is valid
+Test-Path ".\vercel.json"
+Get-Content ".\vercel.json"
+
+# Commit and push
+git add vercel.json
+git commit -m "Add minimal vercel.json"
+git push
