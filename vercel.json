@@ -1,8 +1,18 @@
-# Verify it exists and is valid
-Test-Path ".\vercel.json"
-Get-Content ".\vercel.json"
-
-# Commit and push
-git add vercel.json
-git commit -m "Add minimal vercel.json"
-git push
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": null,
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node@latest"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/.*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
