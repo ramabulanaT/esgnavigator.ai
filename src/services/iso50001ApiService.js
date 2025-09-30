@@ -46,7 +46,7 @@ class ISO50001ApiService {
       throw error;
     }
   }
-
+const BASE_URL = 'https://esgnavigator-ai.vercel.app';
   async getScore(assessmentId) {
     try {
       const response = await fetch(`${API_BASE}/iso50001/score/${assessmentId}`);
