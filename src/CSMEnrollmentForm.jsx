@@ -7,16 +7,17 @@ const CSMEnrollmentForm = () => {
   const domain = location.state?.domain || 'Training Program';
 
   const [formData, setFormData] = useState({
-    c97e91a4-f608-4910-9437-35fec6ff96ccname: '',
+    name: '',
     email: '',
     phone: '',
-    company: ''  });
+    company: ''
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     const formDataToSend = {
-      access_key: "YOUR_ACCESS_KEY_HERE",  // c97e91a4-f608-4910-9437-35fec6ff96cc
+      access_key: "c97e91a4-f608-4910-9437-35fec6ff96cc",
       subject: `New Training Enrollment: ${domain}`,
       from_name: formData.name,
       email: formData.email,
@@ -47,41 +48,6 @@ const CSMEnrollmentForm = () => {
     } catch (error) {
       alert('Submission failed. Please email terryr@tis-holdings.com directly.');
     }
-  };
-    
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          access_key: 'c97e91a4-f608-4910-9437-35fec6ff96cc',
-          subject: `New Training Enrollment: ${domain}`,
-          from_name: formData.name,
-          email: formData.email,
-          message: `
-New Training Enrollment
-
-Program: ${domain}
-Name: ${formData.name}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Company: ${formData.company}
-          `
-        })
-      });
-
-      if (response.ok) {
-        alert(`Thank you for enrolling in ${domain}! We will contact you shortly at ${formData.email}`);
-        navigate('/training');
-      } else {
-        alert('There was an error submitting your enrollment. Please email terryr@tis-holdings.com directly.');
-      }
-    } catch (error) {
-      alert('There was an error submitting your enrollment. Please email terryr@tis-holdings.com directly.');
-    }
-  };
   };
 
   return (

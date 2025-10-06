@@ -30,13 +30,14 @@ const CSMDomainDetail = () => {
       price: 'R10,000',
       duration: '6 weeks',
       description: 'Strategic leadership for organizational transformation'
-    }
-}'digital-transformation': {
+    },
+    'digital-transformation': {
       title: 'Digital Transformation',
       price: 'R16,000',
       duration: '8 weeks',
-      description: 'Lead enterprise digital transformation with proven frameworks and change management strategies'
-      };
+      description: 'Lead enterprise digital transformation with proven frameworks'
+    }
+  };
 
   const domain = domainData[domainId];
 
