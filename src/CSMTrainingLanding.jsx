@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Shield, Leaf, Brain, Users, Rocket } from 'lucide-react';
+import { BookOpen, Shield, Leaf, Brain, Users, Rocket, BarChart3, Lock, TrendingUp } from 'lucide-react';
 
 const CSMTrainingLanding = () => {
   const navigate = useNavigate();
@@ -40,6 +40,27 @@ const CSMTrainingLanding = () => {
       icon: Rocket,
       description: 'Lead enterprise digital innovation and change',
       color: 'bg-cyan-500'
+    },
+    {
+      id: 'data-analytics',
+      title: 'Data Analytics & BI',
+      icon: BarChart3,
+      description: 'Master data-driven decision making and business intelligence',
+      color: 'bg-indigo-500'
+    },
+    {
+      id: 'cybersecurity',
+      title: 'Cybersecurity',
+      icon: Lock,
+      description: 'Implement robust security frameworks and risk management',
+      color: 'bg-red-500'
+    },
+    {
+      id: 'performance',
+      title: 'Performance Management',
+      icon: TrendingUp,
+      description: 'Drive organizational performance and accountability',
+      color: 'bg-emerald-500'
     }
   ];
 

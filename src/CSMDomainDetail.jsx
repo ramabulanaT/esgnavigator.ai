@@ -36,6 +36,24 @@ const CSMDomainDetail = () => {
       price: 'R16,000',
       duration: '8 weeks',
       description: 'Lead enterprise digital transformation with proven frameworks'
+    },
+    'data-analytics': {
+      title: 'Data Analytics & BI',
+      price: 'R14,000',
+      duration: '8 weeks',
+      description: 'Master data-driven decision making and business intelligence tools'
+    },
+    'cybersecurity': {
+      title: 'Cybersecurity',
+      price: 'R17,000',
+      duration: '10 weeks',
+      description: 'Implement robust security frameworks and manage cyber risks'
+    },
+    'performance': {
+      title: 'Performance Management',
+      price: 'R11,000',
+      duration: '6 weeks',
+      description: 'Drive organizational performance with accountability frameworks'
     }
   };
 
