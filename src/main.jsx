@@ -1,13 +1,17 @@
 ﻿import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
+const UseHash = import.meta.env.VITE_USE_HASH === "true";
+const Router = UseHash ? HashRouter : BrowserRouter;
+
+const root = document.getElementById("root");
+if (!root) throw new Error("#root not found");
+
+createRoot(root).render(
+  <Router>
+    <App />
+  </Router>
 );
