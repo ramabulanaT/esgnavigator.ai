@@ -1,4 +1,3 @@
-nano src/CSMEnrollmentForm.jsx
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -93,6 +92,4 @@ const CSMEnrollmentForm = () => {
   );
 };
 
-export default CSMEnrollmentForm;git add src/CSMEnrollmentForm.jsx
-git commit -m "add CSM enrollment form"
-git push origin main
+export default CSMEnrollmentForm;
