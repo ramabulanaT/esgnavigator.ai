@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Shield, Leaf, Brain, Users } from 'lucide-react';
+import { BookOpen, Shield, Leaf, Brain, Users, Rocket } from 'lucide-react';
 
 const CSMTrainingLanding = () => {
   const navigate = useNavigate();
@@ -33,6 +33,13 @@ const CSMTrainingLanding = () => {
       icon: Users,
       description: 'Drive organizational transformation',
       color: 'bg-orange-500'
+    },
+    {
+      id: 'digital-transformation',
+      title: 'Digital Transformation',
+      icon: Rocket,
+      description: 'Lead enterprise digital innovation and change',
+      color: 'bg-cyan-500'
     }
   ];
 
@@ -44,7 +51,7 @@ const CSMTrainingLanding = () => {
           <p className="text-xl text-purple-200">Professional development for modern business leaders</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {domains.map((domain) => {
             const Icon = domain.icon;
             return (
