@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import ExecutiveDashboardPage from './ExecutiveDashboardPage';
 
 function App() {

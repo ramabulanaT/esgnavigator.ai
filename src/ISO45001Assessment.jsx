@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 export default function ISO45001Assessment() {
   const [answers, setAnswers] = useState({

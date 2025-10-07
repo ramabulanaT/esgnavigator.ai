@@ -1,0 +1,128 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const ChevronLeft = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+const ISO50001Assessment = () => {
+  const [activeTab, setActiveTab] = useState('planning');
+  const [responses, setResponses] = useState({});
+  const navigate = useNavigate();
+
+  const tabs = [
+    { id: 'planning', name: 'Planning', icon: '📋' },
+    { id: 'implementation', name: 'Implementation', icon: '⚙️' },
+    { id: 'monitoring', name: 'Monitoring', icon: '📊' },
+    { id: 'improvement', name: 'Improvement', icon: '📈' }
+  ];
+
+  const questions = {
+    planning: [
+      { id: 'p1', text: 'Has your organization established an energy policy?', category: 'Policy' },
+      { id: 'p2', text: 'Are energy objectives and targets documented?', category: 'Objectives' }
+    ],
+    implementation: [
+      { id: 'i1', text: 'Are energy performance indicators established?', category: 'Performance' },
+      { id: 'i2', text: 'Is energy data collection systematic?', category: 'Data Management' }
+    ],
+    monitoring: [
+      { id: 'm1', text: 'Is energy performance regularly monitored?', category: 'Monitoring' },
+      { id: 'm2', text: 'Are internal energy audits conducted?', category: 'Auditing' }
+    ],
+    improvement: [
+      { id: 'im1', text: 'Are corrective actions implemented?', category: 'Corrective Action' },
+      { id: 'im2', text: 'Is the system regularly reviewed?', category: 'Management Review' }
+    ]
+  };
+
+  const handleResponse = (questionId, value) => {
+    setResponses(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+  };
+
+  const calculateProgress = (tabId) => {
+    const tabQuestions = questions[tabId];
+    const answered = tabQuestions.filter(q => responses[q.id] !== undefined).length;
+    return Math.round((answered / tabQuestions.length) * 100);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate('/')}
+              className="text-gray-600 hover:text-gray-900 flex items-center space-x-2"
+            >
+              <ChevronLeft className="h-5 w-5" />
+              <span>Back to Dashboard</span>
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">ISO 50001 Assessment</h1>
+              <p className="text-gray-600">Energy management system evaluation</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md text-sm font-medium ${
+                  activeTab === tab.id
+                    ? 'bg-white text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.name}</span>
+                <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+                  {calculateProgress(tab.id)}%
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="space-y-6">
+            {questions[activeTab].map((question) => (
+              <div key={question.id} className="border-b border-gray-200 pb-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {question.text}
+                  </h3>
+                  <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                    {question.category}
+                  </span>
+                </div>
+                
+                <div className="flex space-x-4">
+                  {['Yes', 'Partial', 'No', 'N/A'].map((option) => (
+                    <label key={option} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name={question.id}
+                        value={option}
+                        checked={responses[question.id] === option}
+                        onChange={(e) => handleResponse(question.id, e.target.value)}
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>

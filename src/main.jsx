@@ -1,13 +1,15 @@
-import React from "react";
+﻿import React from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./shared/AuthContext.jsx";
 import App from "./App.jsx";
 import "./index.css";
 
-const root = document.getElementById("root");
-if (!root) throw new Error("#root not found");
-
-createRoot(root).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+createRoot(document.getElementById("root")).render(
+  <AuthProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </AuthProvider>
 );
+

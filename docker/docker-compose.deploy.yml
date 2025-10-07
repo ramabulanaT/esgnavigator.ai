@@ -1,0 +1,57 @@
+﻿version: "3.9"
+services:
+  traefik:
+    image: traefik:v3.1
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=${TRAEFIK_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--accesslog=true"
+      - "--log.level=INFO"
+    ports: ["80:80","443:443"]
+    volumes:
+      - traefik_letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [ esg ]
+    restart: unless-stopped
+
+  api:
+    image: ${IMAGE_API}
+    env_file: [ ../.env.prod ]
+    networks: [ esg ]
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`${TRAEFIK_DOMAIN}`) && PathPrefix(`/api`)
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls.certresolver=le
+      - traefik.http.services.api.loadbalancer.server.port=3001
+      - traefik.http.routers.api_www.rule=Host(`${TRAEFIK_ALT_DOMAIN}`) && PathPrefix(`/api`)
+      - traefik.http.routers.api_www.entrypoints=websecure
+      - traefik.http.routers.api_www.tls.certresolver=le
+      - traefik.http.routers.api_www.service=api
+
+  web:
+    image: ${IMAGE_WEB}
+    depends_on: [ api ]
+    networks: [ esg ]
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`${TRAEFIK_DOMAIN}`)
+      - traefik.http.routers.web.entrypoints=websecure
+      - traefik.http.routers.web.tls.certresolver=le
+      - traefik.http.services.web.loadbalancer.server.port=80
+      - traefik.http.routers.web_www.rule=Host(`${TRAEFIK_ALT_DOMAIN}`)
+      - traefik.http.routers.web_www.entrypoints=websecure
+      - traefik.http.routers.web_www.tls.certresolver=le
+      - traefik.http.routers.web_www.service=web
+
+volumes: { traefik_letsencrypt: {} }
+networks: { esg: {} }

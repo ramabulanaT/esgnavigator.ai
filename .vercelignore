@@ -1,0 +1,10 @@
+node_modules
+   .next
+   .env*.local
+   .git
+   dist
+   build
+   .cache
+   .vscode
+   .idea
+   *.log
