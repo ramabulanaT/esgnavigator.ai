@@ -183,6 +183,34 @@ const ExecutiveDashboardPage = () => {
       </div>
     </div>
   );
+
+        {/* Training CTA Banner */}
+        <div style={{
+          backgroundColor: '#7c3aed',
+          color: 'white',
+          padding: '30px',
+          borderRadius: '12px',
+          marginTop: '30px',
+          cursor: 'pointer'
+        }} onClick={() => window.location.href = '/training'}>
+          <h3 style={{ fontSize: '24px', marginBottom: '10px', fontWeight: 'bold' }}>
+            Strengthen Your ESG Leadership
+          </h3>
+          <p style={{ fontSize: '16px', opacity: 0.9, marginBottom: '15px' }}>
+            Professional training in Governance, ESG, AI, Leadership & Digital Transformation
+          </p>
+          <button style={{
+            backgroundColor: 'white',
+            color: '#7c3aed',
+            padding: '12px 24px',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}>
+            View Training Programs →
+          </button>
+        </div>
 };
 
 export default ExecutiveDashboardPage;
