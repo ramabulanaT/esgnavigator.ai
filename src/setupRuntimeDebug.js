@@ -1,12 +1,11 @@
 (function(){
-  // Show top-of-screen error banner on runtime failures; helps avoid "blank screen".
   function show(msg){
     try{
       let el=document.getElementById('esg-debug-banner');
       if(!el){
         el=document.createElement('div');
         el.id='esg-debug-banner';
-        el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999999;padding:10px 14px;background:#111827;color:#fef2f2;font:14px/1.4 ui-sans-serif,system-ui';
+        el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999999;padding:10px 14px;background:#111827;color:#fef2f2;font:14px/1.4 ui-sans-serif,system-ui;max-height:40vh;overflow:auto';
         document.body.appendChild(el);
       }
       const pre=document.createElement('pre');
