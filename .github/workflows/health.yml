@@ -1,0 +1,23 @@
+name: health
+on:
+  schedule: [{ cron: "*/30 * * * *" }]
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+permissions:
+  contents: read
+env:
+  RAILWAY_URL: ${{ secrets.RAILWAY_URL }}
+  VERCEL_URL:  ${{ secrets.VERCEL_URL }}
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard – skip if secrets missing
+        if: env.RAILWAY_URL == '' || env.VERCEL_URL == ''
+        run: |
+          echo "::notice title=Health Skipped::Set repo secrets RAILWAY_URL and VERCEL_URL."
+          exit 0
+      - name: Verify live (web/api/sync/cors)
+        run: bash scripts/verify-live.sh "$RAILWAY_URL" "$VERCEL_URL"
