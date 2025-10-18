@@ -1,0 +1,38 @@
+name: Code Quality & Security
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quality-check:
+    name: Code Quality Analysis  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Frontend security audit
+        run: npm audit --audit-level moderate || echo "⚠️ Frontend vulnerabilities detected"
+
+      - name: Backend security audit
+        working-directory: ./backend
+        run: |
+          npm ci
+          npm audit --audit-level moderate || echo "⚠️ Backend vulnerabilities detected"
+
+      - name: Code metrics
+        run: |
+          echo "📊 Code Quality Metrics:"
+          echo "React components: $(find src/ -name "*.jsx" | wc -l)"
+          echo "JavaScript files: $(find src/ -name "*.js" | wc -l)"
+          echo "Backend files: $(find backend/ -name "*.js" | wc -l)"
