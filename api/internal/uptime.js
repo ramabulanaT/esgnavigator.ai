@@ -5,7 +5,7 @@ export default async function handler() {
   const body = JSON.stringify({
     ok: true,
     service: 'esgnavigator-ai',
-    env: 'production',
+    env: process.env.NODE_ENV || 'production',
     apiUrl,
     ts: new Date().toISOString()
   });
