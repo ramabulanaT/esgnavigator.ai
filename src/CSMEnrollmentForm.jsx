@@ -1,82 +1,290 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const CSMEnrollmentForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const domain = location.state?.domain || 'Training Program';
-
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
-    company: ''
+    company: '',
+    jobTitle: '',
+    program: ''
   });
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const programs = [
+    { value: 'grc', label: 'Governance, Risk & Compliance' },
+    { value: 'esg', label: 'ESG & Sustainability Leadership' },
+    { value: 'ai-ml', label: 'AI & Machine Learning' },
+    { value: 'leadership', label: 'Leadership & Strategic Management' }
+  ];
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const formDataToSend = {
-      access_key: "c97e91a4-f608-4910-9437-35fec6ff96cc",
-      subject: `New Training Enrollment: ${domain}`,
-      from_name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      company: formData.company,
-      program: domain,
-      message: `New enrollment request for ${domain}`
-    };
-
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch('https://backend-worker-production.terrymramabulana.workers.dev/csm/enroll', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(formDataToSend)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
 
-      const json = await response.json();
-      
-      if (response.status === 200) {
-        alert(`Thank you ${formData.name}! Your enrollment request has been received. We'll contact you at ${formData.email} within 24 hours.`);
-        navigate('/training');
+      if (response.ok) {
+        setSubmitStatus('success');
+        setTimeout(() => navigate('/training'), 3000);
       } else {
-        alert(`Error: ${json.message}. Please email terryr@tis-holdings.com directly.`);
+        setSubmitStatus('error');
       }
     } catch (error) {
-      alert('Submission failed. Please email terryr@tis-holdings.com directly.');
+      console.error('Enrollment error:', error);
+      setSubmitStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Enroll in Training</h1>
-          <p className="text-gray-600 mb-8">{domain}</p>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-gray-700 mb-2">Full Name</label>
-              <input type="text" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <div style={{
+        background: 'linear-gradient(135deg, #1e3c72, #7e22ce)',
+        color: 'white',
+        padding: '60px 40px',
+        textAlign: 'center',
+        position: 'relative'
+      }}>
+        <button
+          onClick={() => navigate('/training')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            padding: '10px 20px',
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            border: 'none',
+            borderRadius: '8px',
+            color: 'white',
+            cursor: 'pointer'
+          }}
+        >
+          ← Back to Training
+        </button>
+
+        <h1 style={{ fontSize: '42px', marginBottom: '15px' }}>Enroll in CSM Training</h1>
+        <p style={{ fontSize: '18px' }}>Begin your leadership transformation journey</p>
+      </div>
+
+      <div style={{ maxWidth: '800px', margin: '60px auto', padding: '0 40px' }}>
+        {submitStatus === 'success' && (
+          <div style={{
+            backgroundColor: '#d1fae5',
+            border: '2px solid #10b981',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '30px',
+            color: '#065f46'
+          }}>
+            ✓ Enrollment successful! Redirecting...
+          </div>
+        )}
+
+        {submitStatus === 'error' && (
+          <div style={{
+            backgroundColor: '#fee2e2',
+            border: '2px solid #ef4444',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '30px',
+            color: '#991b1b'
+          }}>
+            ✗ Submission failed. Please try again.
+          </div>
+        )}
+
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '40px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h2 style={{ fontSize: '28px', color: '#1e3c72', marginBottom: '30px' }}>
+            Enrollment Form
+          </h2>
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #e0e7ff',
+                    borderRadius: '8px',
+                    fontSize: '16px'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #e0e7ff',
+                    borderRadius: '8px',
+                    fontSize: '16px'
+                  }}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-gray-700 mb-2">Email</label>
-              <input type="email" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                Email *
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e7ff',
+                  borderRadius: '8px',
+                  fontSize: '16px'
+                }}
+              />
             </div>
-            <div>
-              <label className="block text-gray-700 mb-2">Phone</label>
-              <input type="tel" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                Phone *
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e7ff',
+                  borderRadius: '8px',
+                  fontSize: '16px'
+                }}
+              />
             </div>
-            <div>
-              <label className="block text-gray-700 mb-2">Company</label>
-              <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" value={formData.company} onChange={(e) => setFormData({...formData, company: e.target.value})} />
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                Company *
+              </label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e7ff',
+                  borderRadius: '8px',
+                  fontSize: '16px'
+                }}
+              />
             </div>
-            <div className="flex gap-4">
-              <button type="submit" className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition">Submit Enrollment</button>
-              <button type="button" onClick={() => navigate('/training')} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                Job Title *
+              </label>
+              <input
+                type="text"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e7ff',
+                  borderRadius: '8px',
+                  fontSize: '16px'
+                }}
+              />
             </div>
+
+            <div style={{ marginBottom: '30px' }}>
+              <label style={{ display: 'block', color: '#1e3c72', fontWeight: 'bold', marginBottom: '8px' }}>
+                Select Program *
+              </label>
+              <select
+                name="program"
+                value={formData.program}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e7ff',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  backgroundColor: 'white'
+                }}
+              >
+                <option value="">-- Choose a program --</option>
+                {programs.map(prog => (
+                  <option key={prog.value} value={prog.value}>
+                    {prog.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitStatus === 'success'}
+              style={{
+                width: '100%',
+                padding: '15px',
+                background: 'linear-gradient(135deg, #7e22ce, #2a5298)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                cursor: submitStatus === 'success' ? 'not-allowed' : 'pointer',
+                opacity: submitStatus === 'success' ? 0.7 : 1
+              }}
+            >
+              {submitStatus === 'success' ? '✓ Enrolled Successfully' : 'Submit Enrollment'}
+            </button>
           </form>
         </div>
       </div>

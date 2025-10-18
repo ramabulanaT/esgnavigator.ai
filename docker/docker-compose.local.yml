@@ -1,0 +1,16 @@
+﻿version: "3.9"
+services:
+  api:
+    build: { context: .., dockerfile: docker/Full.Dockerfile, target: api, args: { VITE_BASE_URL: ${VITE_BASE_URL:-/} } }
+    env_file: [ ../.env.local ]
+    volumes: [ "../data:/app/data", "../logs:/app/logs" ]
+    expose: [ "3001" ]
+    networks: [ esg ]
+    restart: unless-stopped
+  web:
+    build: { context: .., dockerfile: docker/Full.Dockerfile, target: web, args: { VITE_BASE_URL: ${VITE_BASE_URL:-/} } }
+    depends_on: [ api ]
+    ports: [ "8080:80" ]
+    networks: [ esg ]
+    restart: unless-stopped
+networks: { esg: {} }

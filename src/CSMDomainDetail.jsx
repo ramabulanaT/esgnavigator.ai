@@ -1,93 +1,242 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CSMDomainDetail = () => {
-  const { domainId } = useParams();
   const navigate = useNavigate();
+  const { domainId } = useParams();
 
-  const domainData = {
+  const domains = {
     'grc': {
       title: 'Governance, Risk & Compliance',
-      price: 'R15,000',
-      duration: '8 weeks',
-      description: 'Comprehensive GRC training covering ISO standards and ESG compliance'
+      icon: '🛡️',
+      color: '#ef4444',
+      description: 'Build robust governance frameworks and manage organizational risk effectively.',
+      price: 'R3,800',
+      sessions: 16,
+      topics: [
+        'Corporate Governance Best Practices',
+        'Enterprise Risk Management',
+        'Regulatory Compliance',
+        'Internal Controls & Audit',
+        'Board Effectiveness'
+      ]
     },
     'esg': {
-      title: 'ESG & Sustainability',
-      price: 'R12,000',
-      duration: '6 weeks',
-      description: 'Master ESG reporting and sustainability management'
+      title: 'ESG & Sustainability Leadership',
+      icon: '🌍',
+      color: '#10b981',
+      description: 'Lead sustainable business practices aligned with global ESG standards.',
+      price: 'R4,200',
+      sessions: 12,
+      topics: [
+        'ESG Framework Implementation',
+        'Sustainability Reporting Standards',
+        'Climate Risk Management',
+        'Stakeholder Engagement',
+        'Sustainable Business Models'
+      ]
     },
     'ai-ml': {
       title: 'AI & Machine Learning',
-      price: 'R18,000',
-      duration: '10 weeks',
-      description: 'Practical AI implementation for business applications'
+      icon: '🤖',
+      color: '#3b82f6',
+      description: 'Master AI strategy and implementation to drive innovation.',
+      price: 'R4,500',
+      sessions: 12,
+      topics: [
+        'AI Strategy & Business Transformation',
+        'Machine Learning Fundamentals',
+        'Ethical AI & Responsible Innovation',
+        'AI Implementation Frameworks',
+        'Generative AI Applications'
+      ]
     },
     'leadership': {
-      title: 'Leadership & Strategy',
-      price: 'R10,000',
-      duration: '6 weeks',
-      description: 'Strategic leadership for organizational transformation'
-    },
-    'digital-transformation': {
-      title: 'Digital Transformation',
-      price: 'R16,000',
-      duration: '8 weeks',
-      description: 'Lead enterprise digital transformation with proven frameworks'
-    },
-    'data-analytics': {
-      title: 'Data Analytics & BI',
-      price: 'R14,000',
-      duration: '8 weeks',
-      description: 'Master data-driven decision making and business intelligence tools'
-    },
-    'cybersecurity': {
-      title: 'Cybersecurity',
-      price: 'R17,000',
-      duration: '10 weeks',
-      description: 'Implement robust security frameworks and manage cyber risks'
-    },
-    'performance': {
-      title: 'Performance Management',
-      price: 'R11,000',
-      duration: '6 weeks',
-      description: 'Drive organizational performance with accountability frameworks'
+      title: 'Leadership & Strategic Management',
+      icon: '👥',
+      color: '#f59e0b',
+      description: 'Develop executive presence and strategic thinking capabilities.',
+      price: 'R3,500',
+      sessions: 16,
+      topics: [
+        'Executive Leadership Development',
+        'Strategic Planning & Execution',
+        'Coaching & Mentoring Excellence',
+        'Organizational Culture Building',
+        'High-Performance Team Leadership'
+      ]
     }
   };
 
-  const domain = domainData[domainId];
+  const domain = domains[domainId];
 
   if (!domain) {
-    return <div className="p-8">Domain not found</div>;
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '48px', color: '#1e3c72' }}>Domain Not Found</h1>
+          <button
+            onClick={() => navigate('/training')}
+            style={{
+              padding: '15px 30px',
+              backgroundColor: '#7e22ce',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              marginTop: '20px'
+            }}
+          >
+            Back to Training
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <div style={{
+        background: `linear-gradient(135deg, ${domain.color}, ${domain.color}dd)`,
+        color: 'white',
+        padding: '80px 40px',
+        position: 'relative'
+      }}>
         <button
           onClick={() => navigate('/training')}
-          className="flex items-center text-purple-600 hover:text-purple-800 mb-8"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            padding: '10px 20px',
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            border: 'none',
+            borderRadius: '8px',
+            color: 'white',
+            cursor: 'pointer'
+          }}
         >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Back to all domains
+          ← Back to Training
         </button>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">{domain.title}</h1>
-          <div className="flex gap-4 mb-6">
-            <span className="bg-purple-100 text-purple-800 px-4 py-2 rounded">{domain.price}</span>
-            <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded">{domain.duration}</span>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: '80px', marginBottom: '20px' }}>{domain.icon}</div>
+          <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>{domain.title}</h1>
+          <p style={{ fontSize: '20px', opacity: 0.95 }}>{domain.description}</p>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '1200px', margin: '60px auto', padding: '0 40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px' }}>
+          <div>
+            <div style={{
+              backgroundColor: 'white',
+              padding: '40px',
+              borderRadius: '12px',
+              marginBottom: '30px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            }}>
+              <h2 style={{ fontSize: '28px', color: '#1e3c72', marginBottom: '25px' }}>
+                Topics Covered
+              </h2>
+              {domain.topics.map((topic, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '15px',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    marginBottom: '10px',
+                    borderLeft: `4px solid ${domain.color}`
+                  }}
+                >
+                  ✓ {topic}
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="text-gray-600 text-lg mb-8">{domain.description}</p>
-          
-          <button
-            onClick={() => navigate('/training/enroll', { state: { domain: domain.title } })}
-            className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition"
-          >
-            Enroll Now
-          </button>
+
+          <div>
+            <div style={{
+              backgroundColor: 'white',
+              padding: '30px',
+              borderRadius: '12px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+              position: 'sticky',
+              top: '20px'
+            }}>
+              <h3 style={{ fontSize: '24px', color: '#1e3c72', marginBottom: '20px' }}>
+                Program Details
+              </h3>
+
+              <div style={{
+                padding: '15px',
+                backgroundColor: '#f8fafc',
+                borderRadius: '8px',
+                marginBottom: '20px'
+              }}>
+                <div style={{ fontSize: '14px', color: '#64748b', marginBottom: '5px' }}>
+                  Investment
+                </div>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: domain.color }}>
+                  {domain.price}
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>per learner (excl. VAT)</div>
+              </div>
+
+              <div style={{
+                padding: '20px',
+                backgroundColor: '#f8fafc',
+                borderRadius: '8px',
+                marginBottom: '25px'
+              }}>
+                <div style={{ marginBottom: '15px' }}>
+                  <strong>Sessions:</strong> {domain.sessions} per year
+                </div>
+                <div style={{ marginBottom: '15px' }}>
+                  <strong>Duration:</strong> 3-5 days per session
+                </div>
+                <div>
+                  <strong>Certification:</strong> Included
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('/training/enroll')}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  backgroundColor: domain.color,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  marginBottom: '15px'
+                }}
+              >
+                Enroll Now
+              </button>
+
+<button
+                onClick={() => window.open('/training-brochure.pdf', '_blank')}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  backgroundColor: 'white',
+                  color: domain.color,
+                  border: `2px solid ${domain.color}`,
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                Download Brochure
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

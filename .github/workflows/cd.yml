@@ -1,0 +1,78 @@
+﻿name: cd
+on: { push: { branches: [ main ] }, workflow_dispatch: {} }
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
+  VITE_BASE_URL: "/"
+jobs:
+  build-sign-push:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write, packages: write }
+    outputs:
+      api_tag: ${{ steps.meta.outputs.API_SHA_TAG }}
+      web_tag: ${{ steps.meta.outputs.WEB_SHA_TAG }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: { registry: ${{ env.REGISTRY }}, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
+      - name: Derive tags
+        id: meta
+        run: |
+          SHA=${GITHUB_SHA::12}
+          echo "API_SHA_TAG=${{ env.IMAGE_BASE }}:api-$SHA" >> $GITHUB_OUTPUT
+          echo "WEB_SHA_TAG=${{ env.IMAGE_BASE }}:web-$SHA" >> $GITHUB_OUTPUT
+          echo "API_TAGS=${{ env.IMAGE_BASE }}:api-$SHA,${{ env.IMAGE_BASE }}:api-latest" >> $GITHUB_OUTPUT
+          echo "WEB_TAGS=${{ env.IMAGE_BASE }}:web-$SHA,${{ env.IMAGE_BASE }}:web-latest" >> $GITHUB_OUTPUT
+      - uses: docker/build-push-action@v6
+        with:
+          file: docker/Full.Dockerfile
+          target: api
+          push: true
+          build-args: VITE_BASE_URL=${{ env.VITE_BASE_URL }}
+          tags: ${{ steps.meta.outputs.API_TAGS }}
+      - uses: docker/build-push-action@v6
+        with:
+          file: docker/Full.Dockerfile
+          target: web
+          push: true
+          build-args: VITE_BASE_URL=${{ env.VITE_BASE_URL }}
+          tags: ${{ steps.meta.outputs.WEB_TAGS }}
+      - uses: sigstore/cosign-installer@v3.7.0
+        with: { cosign-release: 'latest' }
+      - name: Cosign sign
+        env: { COSIGN_EXPERIMENTAL: "1" }
+        run: |
+          cosign sign --yes ${{ steps.meta.outputs.API_SHA_TAG }}
+          cosign sign --yes ${{ steps.meta.outputs.WEB_SHA_TAG }}
+      - name: Make release.json
+        run: |
+          mkdir -p release
+          jq -n --arg api "${{ steps.meta.outputs.API_SHA_TAG }}" --arg web "${{ steps.meta.outputs.WEB_SHA_TAG }}" --arg ts "$(date -u +%FT%TZ)" '{apiTag:$api, webTag:$web, ts:$ts}' > release/release.json
+      - uses: actions/upload-artifact@v4
+        with: { name: release, path: release/release.json }
+
+  deploy:
+    needs: build-sign-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: release, path: out }
+      - name: Copy release + deploy files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "out/release.json, docker/docker-compose.deploy.yml, scripts/deploy.sh"
+          target: "/opt/esg/"
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
+          script: "chmod +x /opt/esg/deploy.sh && /opt/esg/deploy.sh || (echo 'Deploy failed' && exit 1)"

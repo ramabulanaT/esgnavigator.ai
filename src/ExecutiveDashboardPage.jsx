@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ExecutiveDashboardPage = () => {
@@ -52,6 +52,14 @@ const ExecutiveDashboardPage = () => {
       score: 91,
       bgColor: '#f9fafb',
       icon: '🏢'
+    },
+    {
+      id: 'integrations',
+      title: 'System Integrations',
+      description: 'PaymentTracker, HubSpot & Zoho Analytics',
+      score: 95,
+      bgColor: '#e8f5e8',
+      icon: '🔗'
     }
   ];
 
@@ -93,6 +101,8 @@ const ExecutiveDashboardPage = () => {
               onClick={() => {
                 if (module.id === 'energy') {
                   navigate('/iso50001');
+                } else if (module.id === 'integrations') {
+                  navigate('/integrations');
                 } else {
                   alert('Module coming soon!');
                 }

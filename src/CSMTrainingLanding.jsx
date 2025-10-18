@@ -1,94 +1,84 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Shield, Leaf, Brain, Users, Rocket, BarChart3, Lock, TrendingUp } from 'lucide-react';
 
 const CSMTrainingLanding = () => {
   const navigate = useNavigate();
 
   const domains = [
-    {
-      id: 'grc',
-      title: 'Governance, Risk & Compliance',
-      icon: Shield,
-      description: 'Master GRC frameworks and ESG compliance',
-      color: 'bg-blue-500'
-    },
-    {
-      id: 'esg',
-      title: 'ESG & Sustainability',
-      icon: Leaf,
-      description: 'Lead sustainability initiatives and reporting',
-      color: 'bg-green-500'
-    },
-    {
-      id: 'ai-ml',
-      title: 'AI & Machine Learning',
-      icon: Brain,
-      description: 'Implement AI solutions for business impact',
-      color: 'bg-purple-500'
-    },
-    {
-      id: 'leadership',
-      title: 'Leadership & Strategy',
-      icon: Users,
-      description: 'Drive organizational transformation',
-      color: 'bg-orange-500'
-    },
-    {
-      id: 'digital-transformation',
-      title: 'Digital Transformation',
-      icon: Rocket,
-      description: 'Lead enterprise digital innovation and change',
-      color: 'bg-cyan-500'
-    },
-    {
-      id: 'data-analytics',
-      title: 'Data Analytics & BI',
-      icon: BarChart3,
-      description: 'Master data-driven decision making and business intelligence',
-      color: 'bg-indigo-500'
-    },
-    {
-      id: 'cybersecurity',
-      title: 'Cybersecurity',
-      icon: Lock,
-      description: 'Implement robust security frameworks and risk management',
-      color: 'bg-red-500'
-    },
-    {
-      id: 'performance',
-      title: 'Performance Management',
-      icon: TrendingUp,
-      description: 'Drive organizational performance and accountability',
-      color: 'bg-emerald-500'
-    }
+    { id: 'grc', title: 'Governance, Risk & Compliance', icon: '🛡️', color: '#ef4444' },
+    { id: 'esg', title: 'ESG & Sustainability', icon: '🌍', color: '#10b981' },
+    { id: 'ai-ml', title: 'AI & Machine Learning', icon: '🤖', color: '#3b82f6' },
+    { id: 'leadership', title: 'Leadership & Strategy', icon: '👥', color: '#f59e0b' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-4">CSM Training Portal</h1>
-          <p className="text-xl text-purple-200">Professional development for modern business leaders</p>
-        </div>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <div style={{
+        background: 'linear-gradient(135deg, #1e3c72 0%, #7e22ce 100%)',
+        color: 'white',
+        padding: '80px 40px',
+        textAlign: 'center'
+      }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            padding: '10px 20px',
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            border: 'none',
+            borderRadius: '8px',
+            color: 'white',
+            cursor: 'pointer'
+          }}
+        >
+          ← Back to Home
+        </button>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {domains.map((domain) => {
-            const Icon = domain.icon;
-            return (
-              <div
-                key={domain.id}
-                onClick={() => navigate(`/training/${domain.id}`)}
-                className="bg-white rounded-lg p-8 cursor-pointer hover:shadow-2xl transition-all transform hover:scale-105"
-              >
-                <div className={`${domain.color} w-16 h-16 rounded-full flex items-center justify-center mb-4`}>
-                  <Icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">{domain.title}</h3>
-                <p className="text-gray-600">{domain.description}</p>
-              </div>
-            );
-          })}
+        <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>
+          CSM Training Portal
+        </h1>
+        <p style={{ fontSize: '20px' }}>
+          IntelliMat 8 Domains Framework - Transform Your Leadership
+        </p>
+      </div>
+
+      <div style={{ maxWidth: '1200px', margin: '60px auto', padding: '0 40px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '30px'
+        }}>
+          {domains.map((domain) => (
+            <div
+              key={domain.id}
+              onClick={() => navigate(`/training/${domain.id}`)}
+              style={{
+                backgroundColor: 'white',
+                padding: '40px',
+                borderRadius: '12px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
+                transition: 'transform 0.3s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <div style={{ fontSize: '48px', marginBottom: '20px' }}>{domain.icon}</div>
+              <h3 style={{ color: domain.color, marginBottom: '15px' }}>{domain.title}</h3>
+              <button style={{
+                padding: '10px 20px',
+                backgroundColor: domain.color,
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}>
+                Learn More →
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>
