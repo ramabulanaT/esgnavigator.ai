@@ -1,12 +1,11 @@
 import React from 'react';
-const cls = (...a)=>a.filter(Boolean).join(' ');
-export function Card({ className, as:Tag='div', ...p }){ return <Tag className={cls('cc-card',className)} {...p}/>; }
-export function CardHeader({ className, as:Tag='div', ...p }){ return <Tag className={cls('cc-card__header',className)} {...p}/>; }
-export function CardTitle({ className, as:Tag='h3', ...p }){ return <Tag className={cls('cc-card__title',className)} {...p}/>; }
-export function CardDescription({ className, as:Tag='p', ...p }){ return <Tag className={cls('cc-card__desc',className)} {...p}/>; }
-export function CardContent({ className, as:Tag='div', ...p }){ return <Tag className={cls('cc-card__content',className)} {...p}/>; }
-export function CardFooter({ className, as:Tag='div', ...p }){ return <Tag className={cls('cc-card__footer',className)} {...p}/>; }
-// inject minimal styles
+const cx=(...a)=>a.filter(Boolean).join(' ');
+export function Card({ className, as:Tag='div', ...p }){ return <Tag className={cx('cc-card',className)} {...p}/>; }
+export function CardHeader({ className, as:Tag='div', ...p }){ return <Tag className={cx('cc-card__header',className)} {...p}/>; }
+export function CardTitle({ className, as:Tag='h3', ...p }){ return <Tag className={cx('cc-card__title',className)} {...p}/>; }
+export function CardDescription({ className, as:Tag='p', ...p }){ return <Tag className={cx('cc-card__desc',className)} {...p}/>; }
+export function CardContent({ className, as:Tag='div', ...p }){ return <Tag className={cx('cc-card__content',className)} {...p}/>; }
+export function CardFooter({ className, as:Tag='div', ...p }){ return <Tag className={cx('cc-card__footer',className)} {...p}/>; }
 if(typeof document!=='undefined' && !document.getElementById('cc-card-style')){
   const s=document.createElement('style'); s.id='cc-card-style';
   s.textContent=`.cc-card{border:1px solid #e5e7eb;border-radius:12px;background:#fff}

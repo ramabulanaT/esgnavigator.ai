@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import './setupRuntimeDebug.js';
 import { ErrorBoundary } from './ErrorBoundary.jsx';
+import { mountHealthOverlay } from './HealthOverlay.jsx';
 
 function DynamicApp(){
   const [Comp, setComp] = React.useState(()=>() => <div style={{padding:16,fontFamily:'ui-sans-serif,system-ui'}}>Loading…</div>);
@@ -13,11 +14,10 @@ function DynamicApp(){
         try { AppMod = await import('./App.jsx'); }
         catch { AppMod = await import('./App.tsx'); }
         const App = AppMod?.default;
-        if (App) setComp(()=>App);
-        else setComp(()=>() => <div style={{padding:16,color:'#b91c1c'}}>No default export from App.*</div>);
+        setComp(()=> App ? App : () => <div style={{padding:16,color:'#b91c1c'}}>No default export from App.*</div>);
       } catch (e) {
-        console.error('Failed to load App.*', e);
         const msg = String(e?.message || e);
+        console.error('Failed to load App.*', e);
         setComp(()=>() => (
           <div style={{padding:16,fontFamily:'ui-sans-serif,system-ui'}}>
             <h2 style={{color:'#b91c1c'}}>Failed to load App</h2>
@@ -41,3 +41,6 @@ ReactDOM.createRoot(ensureRoot()).render(
     <DynamicApp/>
   </React.StrictMode>
 );
+
+// Mount live health overlay independently of the main App
+mountHealthOverlay();
