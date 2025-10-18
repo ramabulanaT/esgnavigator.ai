@@ -1,5 +1,4 @@
 export const config = { runtime: 'edge' };
-
 export default async function handler() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const body = JSON.stringify({
