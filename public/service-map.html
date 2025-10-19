@@ -1,0 +1,117 @@
+<!doctype html><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ESG Navigator – Service Map</title>
+<style>
+  :root{font:14px/1.5 ui-sans-serif,system-ui}
+  body{margin:20px}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  .ok{color:#16a34a}.fail{color:#dc2626}.warn{color:#ca8a04}
+  table{border-collapse:collapse;width:100%;max-width:980px}
+  th,td{border:1px solid #e5e7eb;padding:8px 10px;text-align:left}
+  th{background:#f9fafb}
+  .btn{padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer}
+  .btn:hover{background:#f3f4f6}
+</style>
+<h1>Service Map</h1>
+
+<section>
+  <h3>Vercel Uptime</h3>
+  <div>Alias: <code id="alias"></code></div>
+  <div>Uptime: <span id="uptimeTs"></span></div>
+  <div>Env: <code id="env"></code></div>
+</section>
+
+<section style="margin-top:16px">
+  <h3>API</h3>
+  <div>Base URL: <code id="apiUrl"></code></div>
+  <div>CORS Allow-Origin: <code id="allowOrigin"></code> <span id="corsState"></span></div>
+</section>
+
+<section style="margin-top:16px">
+  <h3>Endpoints</h3>
+  <table>
+    <thead><tr><th>Path</th><th>Method</th><th>Status</th><th>Details</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</section>
+
+<section style="margin-top:16px">
+  <h3>JSON Echo (POST)</h3>
+  <p>Proves JSON + CORS across domains via <code>/api/internal/echo</code>.</p>
+  <textarea id="echoBody" rows="4" style="width:100%">{ "hello": "world" }</textarea><br/>
+  <button class="btn" id="echoBtn">Send</button> <span id="echoStatus"></span>
+  <pre id="echoOut" style="white-space:pre-wrap;margin-top:8px"></pre>
+</section>
+
+<script>
+(async function(){
+  const alias = location.host;
+  document.getElementById('alias').textContent = alias;
+  const set = (id, v)=>document.getElementById(id).textContent = v;
+
+  // Uptime
+  let up = {};
+  try{
+    up = await fetch('/api/internal/uptime', {cache:'no-store'}).then(r=>r.json());
+  }catch{}
+  set('uptimeTs', up.ts ? new Date(up.ts).toLocaleString() : '(n/a)');
+  set('env', up.env || '(n/a)');
+
+  const api = String(up.apiUrl || '').trim().replace(/\/$/,'');
+  set('apiUrl', api || '(not set)');
+  if(!api){ document.getElementById('corsState').innerHTML = '<span class="fail">API URL missing</span>'; return; }
+
+  // Preflight CORS
+  try{
+    const r = await fetch(api + '/health', { method:'OPTIONS', mode:'cors', headers:{'Access-Control-Request-Method':'GET'} });
+    const allow = r.headers.get('access-control-allow-origin') || '(none)';
+    set('allowOrigin', allow);
+    document.getElementById('corsState').innerHTML = (allow==='*'||allow.includes(location.origin)) ? '<span class="ok">OK</span>' : '<span class="warn">check allow-origin</span>';
+  }catch{
+    set('allowOrigin','(preflight failed)'); document.getElementById('corsState').innerHTML = '<span class="fail">FAIL</span>';
+  }
+
+  // Endpoints list
+  const endpoints = [
+    { path:'/', method:'GET' },
+    { path:'/health', method:'GET' },
+    { path:'/api/health', method:'GET' },
+    { path:'/v1/health', method:'GET' },
+    { path:'/api/version', method:'GET' },
+    { path:'/api/internal/echo', method:'POST', body:{ ping:'pong' } }
+  ];
+  const rows = document.getElementById('rows');
+
+  async function probe(ep){
+    try{
+      const opts = { method: ep.method, mode:'cors', headers:{} };
+      if(ep.body){ opts.headers['Content-Type']='application/json'; opts.body=JSON.stringify(ep.body); }
+      const res = await fetch(api + ep.path, opts);
+      const txt = await res.text();
+      return { ok: res.ok, code: res.status, body: txt.slice(0,300) };
+    } catch(e) {
+      return { ok:false, code:0, body:String(e.message||e).slice(0,300) };
+    }
+  }
+
+  for (const ep of endpoints) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><code>${ep.path}</code></td><td>${ep.method}</td><td id="s"></td><td><pre id="b" style="white-space:pre-wrap;margin:0"></pre></td>`;
+    rows.appendChild(tr);
+    const r = await probe(ep);
+    tr.querySelector('#s').innerHTML = r.ok ? `<span class="ok">200</span>` : `<span class="fail">${r.code||'ERR'}</span>`;
+    tr.querySelector('#b').textContent = r.body || '';
+  }
+
+  // Echo UI
+  document.getElementById('echoBtn').onclick = async () => {
+    const bodyEl = document.getElementById('echoBody'), outEl = document.getElementById('echoOut'), st = document.getElementById('echoStatus');
+    let payload; try{ payload = JSON.parse(bodyEl.value); } catch(e){ st.textContent='Invalid JSON'; st.className='fail'; return; }
+    st.textContent='Sending…'; st.className='';
+    try{
+      const r = await fetch(api + '/api/internal/echo', { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      outEl.textContent = await r.text();
+      st.textContent = r.ok ? 'OK' : `HTTP ${r.status}`; st.className = r.ok ? 'ok' : 'fail';
+    }catch(e){ st.textContent = e.message||String(e); st.className='fail'; }
+  };
+})();
+</script>
