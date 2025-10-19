@@ -1,7 +1,6 @@
 export const config = { runtime: 'edge' };
 
 export default async function handler() {
-  // Why: used by diagnostics, CI, and status pages to discover API URL
   const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '').trim().replace(/\/$/, '');
   const body = JSON.stringify({
     ok: true,
