@@ -1,0 +1,59 @@
+<!doctype html><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ESG Navigator Diagnostics</title>
+<style>:root{font:14px/1.5 ui-sans-serif,system-ui}body{margin:20px}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.ok{color:#16a34a}.fail{color:#dc2626}.box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin:10px 0}.row{display:flex;gap:8px;align-items:center}.btn{padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer}.btn:hover{background:#f9fafb}</style>
+<h1>Diagnostics</h1>
+<div class="box"><b>Uptime</b>: <span id="up"></span></div>
+<div class="box"><b>API URL</b>: <code id="api"></code></div>
+<div class="box"><b>Health</b>: <span id="health"></span></div>
+<div class="box"><b>CORS</b>: <span id="cors"></span></div>
+<div class="box">
+  <b>Echo Test (POST JSON)</b>
+  <div class="row" style="margin-top:6px">
+    <textarea id="echoBody" rows="4" style="width:100%">{ "hello": "world" }</textarea>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <button class="btn" id="echoBtn">Send to /api/internal/echo</button>
+    <span id="echoStatus"></span>
+  </div>
+  <pre id="echoOut" style="margin-top:8px;white-space:pre-wrap"></pre>
+</div>
+<script>
+(async function(){
+  const set=(id,html,cls)=>{ const el=document.getElementById(id); el.innerHTML=html; if(cls) el.className=cls; };
+  const up = await fetch('/api/internal/uptime', {cache:'no-store'}).then(r=>r.json()).catch(()=>({apiUrl:''}));
+  set('up', new Date(up.ts||Date.now()).toLocaleString(), 'ok');
+  const api = String(up.apiUrl||'').trim().replace(/\/$/,''); document.getElementById('api').textContent = api || '(not set)';
+
+  // Health
+  if(api){
+    const paths=['/health','/api/health','/v1/health','/']; let ok=false;
+    for(const p of paths){ try{ const r=await fetch(api+p,{mode:'cors'}); if(r.ok){ ok=true; break; } }catch{} }
+    set('health', ok?'healthy':'unreachable', ok?'ok':'fail');
+    // CORS preflight
+    try{
+      const r = await fetch(api+'/health', { method:'OPTIONS', mode:'cors', headers:{'Access-Control-Request-Method':'GET'} });
+      const a = r.headers.get('access-control-allow-origin')||'(none)';
+      set('cors', `Allow-Origin: ${a}`, (a==='*'||a.includes(location.origin))?'ok':'fail');
+    }catch{ set('cors','preflight failed','fail'); }
+  } else { set('health','API URL missing','fail'); set('cors','skipped','fail'); }
+
+  // Echo tester
+  document.getElementById('echoBtn').onclick = async () => {
+    const bodyEl = document.getElementById('echoBody'), outEl = document.getElementById('echoOut'), st = document.getElementById('echoStatus');
+    if(!api){ st.textContent = 'API URL missing'; st.className='fail'; return; }
+    let payload; try{ payload = JSON.parse(bodyEl.value); } catch(e){ st.textContent='Invalid JSON'; st.className='fail'; return; }
+    st.textContent='Sending…'; st.className='';
+    try{
+      const r = await fetch(api + '/api/internal/echo', {
+        method:'POST', mode:'cors',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      outEl.textContent = await r.text();
+      st.textContent = r.ok ? 'OK' : `HTTP ${r.status}`;
+      st.className = r.ok ? 'ok' : 'fail';
+    }catch(e){ st.textContent = e.message||String(e); st.className='fail'; }
+  };
+})();
+</script>
+<p>Tip: set <code>NEXT_PUBLIC_API_URL</code> on Vercel to your Railway URL and redeploy.</p>

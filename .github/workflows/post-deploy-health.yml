@@ -1,0 +1,40 @@
+name: Post-Deploy Health
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    env:
+      WEB_ALIAS: esgnavigator-ai.vercel.app
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: Health check (uptime → health → CORS)
+        run: node scripts/check-health.mjs
+
+      - name: Notify Slack (success)
+        if: ${{ success() && env.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          bash scripts/notify-webhook.sh "$SLACK_WEBHOOK_URL" \
+            "✅ ESG Navigator Live" \
+            "*Status*: OK\n*Alias*: https://${WEB_ALIAS}\n*Run*: $GITHUB_WORKFLOW (#$GITHUB_RUN_NUMBER)\n*Commit*: $GITHUB_SHA" \
+            "#16a34a"
+
+      - name: Notify Slack (failure)
+        if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          bash scripts/notify-webhook.sh "$SLACK_WEBHOOK_URL" \
+            "❌ Health Check Failed" \
+            "*Alias*: https://${WEB_ALIAS}\n*Run*: $GITHUB_WORKFLOW (#$GITHUB_RUN_NUMBER)\n*Commit*: $GITHUB_SHA\nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "#dc2626"

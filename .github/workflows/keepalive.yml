@@ -1,0 +1,19 @@
+name: Keepalive API (15m)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    env:
+      WEB_ALIAS: esgnavigator-ai.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Ping API via status endpoint
+        run: node scripts/keepalive.mjs
