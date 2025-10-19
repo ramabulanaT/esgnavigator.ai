@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
@@ -6,7 +6,7 @@ import fetch from "node-fetch";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: ["https://esgnavigator-ai.vercel.app", "https://esgnavigator-ai-4mhd.vercel.app"] }));
 app.use(express.json());
 
 // Health

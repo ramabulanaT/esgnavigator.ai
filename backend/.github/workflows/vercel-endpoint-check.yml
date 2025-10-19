@@ -1,0 +1,38 @@
+name: Vercel Endpoint Check
+on: { workflow_dispatch: {}, push: { branches: [ main, master ] } }
+concurrency: { group: vercel-endpoint-check-${{ github.ref }}, cancel-in-progress: true }
+env: { BASE_URL: https://www.esgnavigator.ai, HTML_PATH: /service-map.html, JSON_PATH: /api/internal/uptime }
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm i --no-audit --no-fund
+      - run: sed -i 's/\r$//' scripts/verify_vercel_endpoints.sh || true && chmod +x scripts/verify_vercel_endpoints.sh
+      - name: Warm-up (retry)
+        run: |
+          set -euo pipefail
+          for i in {1..12}; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL$HTML_PATH" || true)
+            echo "Attempt $i: code=$code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          exit 1
+      - name: Verify endpoints (STRICT)
+        run: BASE_URL="$BASE_URL" HTML_PATH="$HTML_PATH" JSON_PATH="$JSON_PATH" bash scripts/verify_vercel_endpoints.sh
+      - name: Run e2e smoke
+        env: { BASE_URL: ${{ env.BASE_URL }}, TIMEOUT_MS: '10000', STRICT_REDIRECT: 'true' }
+        run: node scripts/e2e/smoke.mjs
+      - name: Upload diagnostics on failure
+        if: failure()
+        run: |
+          mkdir -p artifacts
+          curl -sS -i "$BASE_URL$HTML_PATH" > artifacts/service-map.txt || true
+          curl -sS -i "$BASE_URL$JSON_PATH" > artifacts/uptime.txt || true
+          curl -sS -i "$BASE_URL${JSON_PATH}.js" > artifacts/uptime-js.txt || true
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: vercel-endpoint-diagnostics-linux, path: artifacts }
