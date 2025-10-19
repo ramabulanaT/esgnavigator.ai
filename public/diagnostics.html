@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ESG Navigator Diagnostics</title>
+<style>:root{font:14px/1.5 ui-sans-serif,system-ui}body{margin:20px}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.ok{color:#16a34a}.fail{color:#dc2626}.box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin:10px 0}</style>
+<h1>Diagnostics</h1>
+<div class="box"><b>Uptime</b>: <span id="up"></span></div>
+<div class="box"><b>API URL</b>: <code id="api"></code></div>
+<div class="box"><b>Health</b>: <span id="health"></span></div>
+<div class="box"><b>CORS</b>: <span id="cors"></span></div>
+<script>
+(async function(){
+  const set=(id,html,cls)=>{ const el=document.getElementById(id); el.innerHTML=html; if(cls){ el.className=cls; } };
+  try{
+    const u = await fetch('/api/internal/uptime', {cache:'no-store'}).then(r=>r.json());
+    set('up', new Date(u.ts).toLocaleString(), 'ok');
+    const api = String(u.apiUrl||'').trim().replace(/\/$/,'');
+    document.getElementById('api').textContent = api || '(not set)';
+    if(!api){ set('health','API URL missing', 'fail'); set('cors','skipped','fail'); return; }
+    const tryPaths=['/health','/api/health','/v1/health','/'];
+    let ok=false;
+    for(const p of tryPaths){ try{ const r=await fetch(api+p,{mode:'cors'}); if(r.ok){ ok=true; break; } }catch{} }
+    set('health', ok?'healthy':'unreachable', ok?'ok':'fail');
+    try{
+      const r = await fetch(api+'/health', {method:'OPTIONS', mode:'cors', headers:{'Access-Control-Request-Method':'GET'}});
+      const a = r.headers.get('access-control-allow-origin')||'(none)';
+      set('cors', `Allow-Origin: ${a}`, (a==='*' || a.includes(location.origin))?'ok':'fail');
+    }catch{ set('cors','preflight failed','fail'); }
+  }catch(e){ set('up', e.message||String(e), 'fail'); }
+})();
+</script>
+<p>Tip: set <code>NEXT_PUBLIC_API_URL</code> to your Railway URL and redeploy.</p>

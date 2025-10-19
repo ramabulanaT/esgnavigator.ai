@@ -41,6 +41,6 @@
     "api": "node server/index.js",
     "dev:all": "concurrently -n API,WEB -c blue,green \"npm:api\" \"npm:dev\"",
     "demo:seed": "node seeds/seed-demo.js",
-    "prebuild": "node scripts/stub-shadcn-ui.js"
+    "prebuild": "node scripts/stub-shadcn-ui.cjs"
   }
 }
