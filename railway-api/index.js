@@ -9,12 +9,13 @@ const ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .map(s => s.trim())
   .filter(Boolean);
 
+// wildcard support: *.vercel.app
 const allow = (origin) => {
-  if (!origin) return true;                       // server-to-server
+  if (!origin) return true;              // server-to-server / curl
   if (ORIGINS.includes('*')) return true;
   if (ORIGINS.includes(origin)) return true;
-  for (const o of ORIGINS) {
-    if (o.startsWith('*.') && origin.endsWith(o.slice(1))) return true;
+  for (const pat of ORIGINS) {
+    if (pat.startsWith('*.') && origin.endsWith(pat.slice(1))) return true;
   }
   return false;
 };
@@ -27,9 +28,13 @@ app.use(cors({
 }));
 app.options('*', cors());
 
-// Health & diagnostics
+// health + info
 app.get('/', (_req, res) => res.json({ ok: true, service: 'railway-api', ts: new Date().toISOString() }));
-app.get(['/health','/api/health','/v1/health'], (_req, res) => res.json({ ok: true, status: 'healthy', ts: new Date().toISOString() }));
-app.get('/api/version', (_req, res) => res.json({ name: 'esg-railway-api', version: process.env.API_VERSION || 'v1', node: process.version, env: process.env.NODE_ENV || 'production' }));
+app.get(['/health','/api/health','/v1/health'], (_req, res) =>
+  res.json({ ok: true, status: 'healthy', ts: new Date().toISOString() })
+);
+app.get('/api/version', (_req, res) =>
+  res.json({ name: 'esg-railway-api', version: process.env.API_VERSION || 'v1', node: process.version, env: process.env.NODE_ENV || 'production' })
+);
 
-app.listen(PORT, '0.0.0.0', () => console.log(`Railway API on 0.0.0.0:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Railway API listening on 0.0.0.0:${PORT}`));
