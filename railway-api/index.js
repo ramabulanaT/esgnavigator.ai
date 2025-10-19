@@ -34,6 +34,13 @@ app.get(['/health','/api/health','/v1/health'], (_req, res) =>
   res.json({ ok: true, status: 'healthy', ts: new Date().toISOString() })
 );
 app.get('/api/version', (_req, res) =>
+
+app.post(/api/internal/echo, (req, res) => {
+  // Why: end-to-end JSON + CORS proof
+  res.set(x-echo, ok);
+  res.json({ ok: true, received: req.body, ts: new Date().toISOString() });
+});
+
   res.json({ name: 'esg-railway-api', version: process.env.API_VERSION || 'v1', node: process.version, env: process.env.NODE_ENV || 'production' })
 );
 
