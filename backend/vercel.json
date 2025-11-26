@@ -1,17 +1,21 @@
 {
   "redirects": [
     {
-      "source": "/api/(.*)\\.js",
-      "destination": "/api/$1",
-      "permanent": true
+      "source": "/api/internal/uptime.js",
+      "destination": "/api/internal/uptime",
+      "permanent": false
     }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
       ]
     }
-  ]
+  ],
+  "version": 2
 }

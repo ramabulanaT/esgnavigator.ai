@@ -1,14 +1,15 @@
 {
   "name": "esg-railway-api",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "dependencies": {
-    "@azure/identity": "^4.13.0",
-    "@microsoft/microsoft-graph-client": "^3.0.7",
-    "cors": "^2.8.5",
-    "express": "^5.1.0"
-  },
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.5.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
   }
 }
