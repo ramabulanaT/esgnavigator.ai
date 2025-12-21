@@ -92,7 +92,7 @@ const ExecutiveDashboardPage = () => {
       <div style={{maxWidth: '1200px', margin: '0 auto', padding: '32px 24px'}}>
         <div style={{
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, repeat(3, 1fr)', 
           gap: '24px'
         }}>
           {modules.map((module) => (
