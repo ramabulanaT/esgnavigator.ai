@@ -10,7 +10,7 @@ import tempfile
 from datetime import datetime
 from typing import Dict, Any, List
 
-MLFLOW_URI = "https://refreshing-laughter-production-fb60.up.railway.app"
+MLFLOW_URI = "https://mlflow-governance-production.up.railway.app"
 
 AGENTS = {
     "ESG_COMPLIANCE": {"name": "ESG Compliance Agent", "standards": ["GRI", "SASB", "TCFD", "CDP", "JSE"]},
