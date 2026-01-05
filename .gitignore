@@ -6,13 +6,26 @@ out/
 .turbo/
 coverage/
 dist/
+
 # Env
 .env*
+
 # Local tools
 .nvm/
 .DS_Store
 *.log
+
 # IDE
 .vscode/
 *.swp
 .netcheck/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temp/generated files
+*.tmp
+error.txt
+deployment-url.txt
