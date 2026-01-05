@@ -1,10 +1,8 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/service-map.html", "dest": "/service-map.html" },
-    { "src": "/api/internal/(.*)", "dest": "/api/internal/$1" }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "handle": "filesystem" },
+    { "src": "/api/internal/(.*)", "dest": "/api/internal/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
