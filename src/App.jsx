@@ -1,4 +1,5 @@
-﻿import React, { useMemo, useState } from "react";
+﻿import AIAnalyzeTest from './AIAnalyzeTest';
+import React, { useMemo, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -34,6 +35,7 @@ function App() {
         <Route path="/training" element={<CSMTrainingLanding />} />
         <Route path="/training/:domainId" element={<CSMDomainDetail />} />
         <Route path="/training/enroll" element={<CSMEnrollmentForm />} />
+        <Route path="/ai-test" element={<AIAnalyzeTest />} />
       </Routes>
     </Router>
   );
